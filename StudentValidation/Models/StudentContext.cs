@@ -7,6 +7,8 @@ using System.Data.Entity;
 
 namespace StudentValidation.Models
 {
+
+    //Context class
     public class StudentContext : DbContext
     {
         public StudentContext() : base() { }
