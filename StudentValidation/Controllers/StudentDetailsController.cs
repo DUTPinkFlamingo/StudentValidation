@@ -123,5 +123,52 @@ namespace StudentValidation.Controllers
             }
             base.Dispose(disposing);
         }
+
+        [HttpPost]
+        public ActionResult Search(string name, string searchBy)
+        {
+            if ((ModelState.IsValid) && (!string.IsNullOrEmpty(name)) && (!string.IsNullOrEmpty(searchBy)))
+            {
+                var AzureTable = new AzureTablesBusiness.AzureTablesBusiness();
+                return View("Index", AzureTable.SearchStudents("student", name, searchBy));
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        //For the Business Layer
+        public List<StudentEntity> SearchStudents(string tableName, string name, string searchBy)
+        {
+
+            var table = GetTableReference(tableName);
+
+
+            if (searchBy == "Name" )
+            {
+
+                var query = (from stu in table.CreateQuery<StudentEntity>().Execute()
+                             where 
+                             (stu.firstName.Contains(name)) && (stu.isActive.Equals(true)) 
+                             select stu);
+            }
+            else if (searchBy == "Surname")
+            {
+
+                var query = (from stu in table.CreateQuery<StudentEntity>().Execute()
+                            (stu.surname.Contains(name)) && (stu.isActive.Equals(true))
+                             select stu);
+            }
+
+            else if (searchBy == "Number")
+            {
+
+                var query = (from stu in table.CreateQuery<StudentEntity>().Execute()
+                             (stu.studentName.Contains(name)) && (stu.isActive.Equals(true))
+                             select stu);
+            }
+            return new List<StudentEntity>(query);
+        }
+
+
     }
 }
